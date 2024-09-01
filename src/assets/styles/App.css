@@ -1,0 +1,18 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.toolbar {
+    display: flex;
+    background-color: #f4f4f4;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.canvas {
+    flex: 1;
+    background-color: #ffffff;
+    cursor: crosshair;
+}
