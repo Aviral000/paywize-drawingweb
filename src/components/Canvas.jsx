@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useContext } from 'react';
 import { CollaborationContext } from '../context/CollaborationContext';
 import useCanvas from '../hooks/useCanvas';
+import PresetShapes from './PresentShape';
 
 const Canvas = () => {
     const canvasRef = useRef(null);
@@ -25,6 +26,7 @@ const Canvas = () => {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
             ></canvas>
+            <PresetShapes canvasRef={canvasRef} />
             {collaborators.map(collab => (
                 <div
                     key={collab.id}

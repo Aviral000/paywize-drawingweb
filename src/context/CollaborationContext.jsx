@@ -67,37 +67,20 @@ export const CollaborationProvider = ({ children }) => {
         if (action === 'draw') {
             context.strokeStyle = data.color;
             context.lineWidth = data.brushSize;
-    
-            if (data.shape === 'line') {
-                context.beginPath();
-                context.moveTo(data.x1, data.y1);
-                context.lineTo(data.x2, data.y2);
-                context.stroke();
-            } else if (data.shape === 'rectangle') {
-                context.beginPath();
-                context.rect(data.x1, data.y1, data.x2 - data.x1, data.y2 - data.y1);
-                context.stroke();
-            } else if (data.shape === 'circle') {
-                const radius = Math.sqrt(Math.pow(data.x2 - data.x1, 2) + Math.pow(data.y2 - data.y1, 2));
-                context.beginPath();
-                context.arc(data.x1, data.y1, radius, 0, 2 * Math.PI);
-                context.stroke();
-            } else if (data.shape === 'freehand') {
-                context.lineJoin = 'round';
-                context.lineCap = 'round';
-    
-                context.beginPath();
-                context.moveTo(data.x1, data.y1);
-                context.lineTo(data.x2, data.y2);
-                context.stroke();
-            } else if (action === 'erase') {
-                context.clearRect(data.x, data.y, data.size, data.size);
-            } else if (action === 'text') {
-                context.fillStyle = data.color;
-                context.font = `${data.brushSize * 5}px Arial`;
-                context.fillText(data.text, data.x, data.y);
-            }
-        };
+            context.lineJoin = 'round';
+            context.lineCap = 'round';
+
+            context.beginPath();
+            context.moveTo(data.x1, data.y1);
+            context.lineTo(data.x2, data.y2);
+            context.stroke();
+        } else if (action === 'erase') {
+            context.clearRect(data.x, data.y, data.size, data.size);
+        } else if (action === 'text') {
+            context.fillStyle = data.color;
+            context.font = `${data.brushSize * 5}px Arial`;
+            context.fillText(data.text, data.x, data.y);
+        }
     };
 
     useEffect(() => {
