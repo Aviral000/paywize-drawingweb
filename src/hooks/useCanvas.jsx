@@ -3,8 +3,9 @@ import { CollaborationContext } from '../context/CollaborationContext';
 import { updateCollaborators } from '../services/collaborationService';
 
 const useCanvas = (canvasRef) => {
-    const { color, brushSize, shape, text, eraser, addToHistory } = useContext(CollaborationContext);
+    const { color, brushSize, shape, text, textFont, textSize, eraser, addToHistory } = useContext(CollaborationContext);
     const [isDrawing, setIsDrawing] = useState(false);
+    const [isTyping, setIsTyping] = useState(false);
     const startPosRef = useRef({ x: 0, y: 0 });
 
     useEffect(() => {
@@ -34,7 +35,14 @@ const useCanvas = (canvasRef) => {
     const draw = useCallback((startX, startY, endX, endY, options = {}) => {
         const canvas = canvasRef.current;
         const context = canvas.getContext('2d');
-        const { color: drawColor = color, brushSize: drawBrushSize = brushSize, shape: drawShape = shape } = options;
+        const { 
+            color: drawColor = color, 
+            brushSize: drawBrushSize = brushSize, 
+            shape: drawShape = shape,
+            text: drawText = text,
+            textFont: drawTextFont = textFont,
+            textSize: drawTextSize = textSize
+        } = options;
 
         context.strokeStyle = drawColor;
         context.lineWidth = drawBrushSize;
@@ -60,9 +68,10 @@ const useCanvas = (canvasRef) => {
                 context.arc(startX, startY, radius, 0, 2 * Math.PI);
                 break;
             case 'text':
+                console.log('Drawing text:', drawText, 'at', endX, endY);
                 context.fillStyle = drawColor;
-                context.font = `${drawBrushSize * 5}px Arial`;
-                context.fillText(options.text || text, endX, endY);
+                context.font = `${drawTextSize}px ${drawTextFont}`;
+                context.fillText(drawText, endX, endY);
                 break;
         }
 
@@ -70,9 +79,38 @@ const useCanvas = (canvasRef) => {
             context.stroke();
         }
 
-        addToHistory('draw', { x1: startX, y1: startY, x2: endX, y2: endY, color: drawColor, brushSize: drawBrushSize, shape: drawShape, text: options.text });
-        updateCollaborators('draw', { x1: startX, y1: startY, x2: endX, y2: endY, color: drawColor, brushSize: drawBrushSize, shape: drawShape, text: options.text });
-    }, [color, brushSize, shape, text, addToHistory]);
+        addToHistory('draw', { 
+            x1: startX, y1: startY, x2: endX, y2: endY, 
+            color: drawColor, 
+            brushSize: drawBrushSize, 
+            shape: drawShape, 
+            text: drawText,
+            textFont: drawTextFont,
+            textSize: drawTextSize
+        });
+        updateCollaborators('draw', { 
+            x1: startX, y1: startY, x2: endX, y2: endY, 
+            color: drawColor, 
+            brushSize: drawBrushSize, 
+            shape: drawShape, 
+            text: drawText,
+            textFont: drawTextFont,
+            textSize: drawTextSize
+        });
+    }, [color, brushSize, shape, text, textFont, textSize, addToHistory]);
+
+    const handleTextInput = useCallback((e) => {
+        if (isTyping && text) {
+            const canvas = canvasRef.current;
+            const context = canvas.getContext('2d');
+            context.fillStyle = color;
+            context.font = `${textSize}px ${textFont}`;
+            context.fillText(text, startPosRef.current.x, startPosRef.current.y);
+            addToHistory('text', { text, x: startPosRef.current.x, y: startPosRef.current.y, color, textFont, textSize });
+            updateCollaborators('text', { text, x: startPosRef.current.x, y: startPosRef.current.y, color, textFont, textSize });
+            setIsTyping(false);
+        }
+    }, [isTyping, text, color, textFont, textSize, startPosRef, addToHistory]);
 
     const handleMouseDown = useCallback((e) => {
         const canvas = canvasRef.current;
@@ -83,7 +121,9 @@ const useCanvas = (canvasRef) => {
         if (eraser) {
             erase(x, y);
         } else if (shape === 'text') {
-            draw(x, y, x, y, { shape: 'text' });
+            setIsTyping(true);
+        } else {
+            draw(x, y, x, y, { shape });
         }
     }, [getMousePos, eraser, shape, draw]);
 
@@ -131,7 +171,7 @@ const useCanvas = (canvasRef) => {
         updateCollaborators('clear');
     }, [addToHistory]);
 
-    return { draw, clearCanvas, handleMouseDown, handleMouseMove, handleMouseUp };
+    return { draw, clearCanvas, handleMouseDown, handleMouseMove, handleMouseUp, handleTextInput };
 };
 
 export default useCanvas;

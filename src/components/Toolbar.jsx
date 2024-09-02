@@ -6,13 +6,13 @@ import TextInput from './TextInput';
 import Eraser from './Eraser';
 import UndoRedo from './UndoRedo';
 
-const Toolbar = () => {
+const Toolbar = ({ canvasRef }) => {
     return (
         <div className="toolbar">
             <ColorPicker />
             <BrushSizeSelector />
             <ShapeSelector />
-            <TextInput />
+            <TextInput canvasRef={canvasRef} />
             <Eraser />
             <UndoRedo />
         </div>

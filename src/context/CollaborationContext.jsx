@@ -8,6 +8,8 @@ export const CollaborationProvider = ({ children }) => {
     const [brushSize, setBrushSize] = useState(2);
     const [shape, setShape] = useState('freehand');
     const [text, setText] = useState('');
+    const [textFont, setTextFont] = useState('Arial');
+    const [textSize, setTextSize] = useState(16);
     const [eraser, setEraser] = useState(false);
     const [collaborators, setCollaborators] = useState([]);
 
@@ -98,6 +100,8 @@ export const CollaborationProvider = ({ children }) => {
             brushSize, setBrushSize,
             shape, setShape,
             text, setText,
+            textFont, setTextFont,
+            textSize, setTextSize,
             eraser, setEraser,
             undo, redo,
             addToHistory,
