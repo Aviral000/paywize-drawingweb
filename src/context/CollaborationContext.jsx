@@ -34,6 +34,8 @@ export const CollaborationProvider = ({ children }) => {
         });
     };
 
+    console.log("hi")
+
 
     const undo = () => {
         if (history.length > 0) {
